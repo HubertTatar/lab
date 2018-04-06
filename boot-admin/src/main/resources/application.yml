@@ -7,3 +7,11 @@ spring:
         ignored-services:
           - "consul"
           - "rabbitmq"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+endpoints:
+  prometheus:
+    enabled: true

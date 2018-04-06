@@ -35,6 +35,9 @@ dependencies {
     compile('de.codecentric:spring-boot-admin-server:2.0.0-SNAPSHOT')
     compile('de.codecentric:spring-boot-admin-server-ui:2.0.0-SNAPSHOT')
     compile('org.jolokia:jolokia-core:1.5.0')
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    runtime("io.micrometer:micrometer-registry-prometheus")
+
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 
