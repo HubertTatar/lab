@@ -14,6 +14,21 @@ services:
     cpu_shares: 102
     mem_limit: 256m
 
+  postgres:
+    image: io.huta/postgres:10.3
+    ports:
+      - "5432"
+    depends_on:
+      consul:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL","psql -U postgres -d shop -c 'SELECT 1' || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    cpu_shares: 102
+    mem_limit: 512m
+
   rabbitmq:
     image: io.huta/rabbitmq:3.7.4-rc.4
     ports:
@@ -23,6 +38,11 @@ services:
       - RABBITMQ_DEFAULT_PASS=rabbit
     cpu_shares: 102  
     mem_limit: 512m
+    healthcheck:
+      test: ["CMD-SHELL","rabbitmqctl status | grep pid"]
+      interval: 15s
+      timeout: 5s
+      retries: 10      
 
   grafana:
     image: grafana/grafana:5.0.4
@@ -31,7 +51,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - "GF_SECURITY_ADMIN_PASSWORD=grafana"
+      - "GF_SECURITY_ADMIN_PASSWORD=grafana"    
 
   elasticsearch:
     image: io.huta/elasticsearch:6.2.2
@@ -68,7 +88,14 @@ services:
     ports:
       - "5601:5601"
     depends_on:
-      - elasticsearch      
+      - elasticsearch     
+
+  zipkin:
+    image: openzipkin/zipkin   
+    environment:
+      - STORAGE_TYPE=mem
+    ports:
+      - 9411:9411              
 
   boot-admin:
     image: io.huta/boot-admin:0.1
