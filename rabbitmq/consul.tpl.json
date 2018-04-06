@@ -1,0 +1,18 @@
+{
+  "data_dir": "/tmp/consul",
+  "datacenter": "${CONSUL_DC}",
+  "enable_script_checks": true,
+  "services": [
+      {
+          "name": "${CONSUL_SERVICE_NAME}",
+          "port": 5672,
+          "checks": [
+              {
+                  "script": "/usr/lib/rabbitmq/bin/rabbitmqctl node_health_check",
+                  "interval": "10s",
+                  "timeout": "2s"
+              }
+          ]
+      }
+  ]
+} 
