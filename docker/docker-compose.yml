@@ -44,6 +44,14 @@ services:
       timeout: 5s
       retries: 10      
 
+  prometheus:
+    image: prom/prometheus:v2.2.1
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml
+    
+
   grafana:
     image: grafana/grafana:5.0.4
     mem_limit: 512m
@@ -91,7 +99,9 @@ services:
       - elasticsearch     
 
   zipkin:
-    image: openzipkin/zipkin   
+    image: openzipkin/zipkin
+    mem_limit: 768m
+    cpu_shares: 386  
     environment:
       - STORAGE_TYPE=mem
     ports:
