@@ -1,6 +1,7 @@
 version: '2.1'
 
 services:
+
   consul:
     image: consul:1.0.6
     ports:
@@ -12,6 +13,7 @@ services:
       retries: 10
     cpu_shares: 102
     mem_limit: 256m
+
   rabbitmq:
     image: io.huta/rabbitmq:3.7.4-rc.4
     ports:
@@ -20,5 +22,67 @@ services:
       - RABBITMQ_DEFAULT_USER=rabbit
       - RABBITMQ_DEFAULT_PASS=rabbit
     cpu_shares: 102  
-    mem_limit: 512m  
+    mem_limit: 512m
+
+  grafana:
+    image: grafana/grafana:5.0.4
+    mem_limit: 512m
+    cpu_shares: 256
+    ports:
+      - "3000:3000"
+    environment:
+      - "GF_SECURITY_ADMIN_PASSWORD=grafana"
+
+  elasticsearch:
+    image: io.huta/elasticsearch:6.2.2
+    mem_limit: 1536m
+    cpu_shares: 386
+    volumes:
+      - ../elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx1g -Xms1g"
+
+  logstash:
+    image: io.huta/logstash:6.2.2
+    mem_limit: 1536m
+    cpu_shares: 386
+    volumes:
+      - ../logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ../logstash/pipeline:/usr/share/logstash/pipeline:ro
+    ports:
+      - "5000:5000"
+    environment:
+      LS_JAVA_OPTS: "-Xmx1g -Xms1g"
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: io.huta/kibana:6.2.2
+    mem_limit: 1536m
+    cpu_shares: 386    
+    volumes:
+      - ../kibana/config/:/usr/share/kibana/config:ro
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch      
+
+  boot-admin:
+    image: io.huta/boot-admin:0.1
+    mem_limit: 256m
+    cpu_shares: 102
+    depends_on:
+      consul:
+        condition: service_healthy  
+    ports:
+      - "8004:8004"
+    environment:
+      - "JAVA_OPTS= -Xms128m -Xmx128m -Xms256k -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
+      - "server_port=8004"
+      - "spring_cloud_consul_host=consul"
+      - "spring_cloud_consul_port=8500"
+      - "spring_profiles_active=dev"
 
