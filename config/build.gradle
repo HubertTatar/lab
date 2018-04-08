@@ -35,6 +35,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-actuator')
     compile('org.springframework.cloud:spring-cloud-config-server')
     compile('org.springframework.cloud:spring-cloud-starter-consul-discovery')
+    compile('org.springframework.cloud:spring-cloud-starter-bus-amqp')
     compile('org.jolokia:jolokia-core:1.5.0')
     runtime("io.micrometer:micrometer-registry-prometheus")
     testCompile('org.springframework.boot:spring-boot-starter-test')

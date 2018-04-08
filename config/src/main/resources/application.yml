@@ -1,5 +1,5 @@
 server:
-  port: 8006
+  port: 8007
 management:
   endpoints:
     web:
@@ -11,15 +11,17 @@ endpoints:
 spring:
   cloud:
     bus:
-      enabled: false
+      enabled: true
       trace:
-        enabled: false
+        enabled: true
     config:
       server:
         git:
           uri: file:///home/huta/workspace/java/lab/
           #uri: https://github.com/HubertTatar/sbms.git
           search-paths: configurations
-#  rabbitmq:
-#    host: localhost
-#    port: 5672
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: rabbit
+    password: rabbit

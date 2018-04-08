@@ -2,6 +2,15 @@ version: '2.1'
 
 services:
 
+  portrainer:
+    image: portainer/portainer
+    ports:
+      - "9000:9000"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    cpu_shares: 102
+    mem_limit: 256m
+
   consul:
     image: consul:1.0.6
     ports:
@@ -33,6 +42,8 @@ services:
     image: io.huta/rabbitmq:3.7.4-rc.4
     ports:
       - "8501:15672"
+      - "5671:5671"
+      - "5672:5672"
     environment: 
       - RABBITMQ_DEFAULT_USER=rabbit
       - RABBITMQ_DEFAULT_PASS=rabbit
@@ -158,6 +169,8 @@ services:
     depends_on:
       consul:
         condition: service_healthy  
+      rabbitmq:
+        condition: service_healthy        
     ports:
       - "8006:8006"
     healthcheck:
@@ -170,4 +183,8 @@ services:
       - "server_port=8006"
       - "spring_cloud_consul_host=consul"
       - "spring_cloud_consul_port=8500"
-      - "spring_profiles_active=dev"      
+      - "spring_profiles_active=dev"
+      - "spring_rabbitmq_host=rabbitmq"      
+      - "spring_rabbitmq_port=5672"
+      - "spring_rabbitmq_username=rabbit"
+      - "spring_rabbitmq_password=rabbit"
