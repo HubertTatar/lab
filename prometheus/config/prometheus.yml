@@ -39,4 +39,4 @@ scrape_configs:
     consul_sd_configs:
     - server:   'consul:8500'
       datacenter: 'dc1'
-      services: ['boot-admin']
+      services: ['boot-admin', 'gateway']
