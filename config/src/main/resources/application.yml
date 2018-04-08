@@ -1,0 +1,25 @@
+server:
+  port: 8006
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+endpoints:
+  prometheus:
+    enabled: true
+spring:
+  cloud:
+    bus:
+      enabled: false
+      trace:
+        enabled: false
+    config:
+      server:
+        git:
+          uri: file:///home/huta/workspace/java/lab/
+          #uri: https://github.com/HubertTatar/sbms.git
+          search-paths: configurations
+#  rabbitmq:
+#    host: localhost
+#    port: 5672
