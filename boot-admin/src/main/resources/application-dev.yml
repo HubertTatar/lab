@@ -7,3 +7,4 @@ spring:
         ignored-services:
           - "consul"
           - "rabbitmq"
+          - "postgres-db"

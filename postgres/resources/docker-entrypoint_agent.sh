@@ -138,65 +138,17 @@ if [ "$1" = 'postgres' ]; then
 
 		echo
 		echo 'PostgreSQL init process complete; ready for start up.'
-                echo
-        fi
+		echo
+	fi
 
-    export SERVICE_ID=$(uuidgen eth0)
-
-    if [ -z $ENVIRONMENT ]; then
-        export ENVIRONMENT='local'
-    fi
-
-    if [ -z $SERVICE_NAME ]; then
-        export SERVICE_NAME="postgres-db"
-    fi
-
-    if [ -z $PORT0 ]; then
-        export PORT0=5432
-    fi
-
-    if [ -z $CONSUL_HOST ]; then
-      export CONSUL_URL=discovery:8500
-      export HOST=$(/sbin/ip route get 8.8.8.8| grep src | awk '{print $7}')
-    else
-                        if [ -z $CONSUL_PORT ]; then
-        export CONSUL_URL=$CONSUL_HOST:8500
-                        else
-                                export CONSUL_URL=$CONSUL_HOST:$CONSUL_PORT
-                        fi
-    fi
-
-    if [ -z $CONSUL_TAGS ]; then
-        export CONSUL_TAGS=""
-    fi
-
-    if [ -z $DEREGISTER_TIMEOUT ]; then
-        export DEREGISTER_TIMEOUT="15m"
-    fi
-
-    echo $(date -Iseconds) Register in consul $CONSUL_HOST instance $SERVICE_ID as service $SERVICE_NAME
-    echo '{ "ID": "'"$SERVICE_ID"'", "name": "'"$SERVICE_NAME"'", "tags": ["'"$ENVIRONMENT"'"'$CONSUL_TAGS'], "address": "'"$CONSUL_HOST"'", "port": '$PORT0', "check": { "tcp": "'$CONSUL_HOST':'$PORT0'", "interval": "10s", "deregister_critical_service_after": "'$DEREGISTER_TIMEOUT'" } }' > /tmp/payload.json
-    cat /tmp/payload.json
-    curl \
-        --request PUT \
-        --data @/tmp/payload.json \
-        http://"$CONSUL_URL"/v1/agent/service/register
+	 export HOST=$( ip a | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')
+	 echo 'Joinning ' $CONSUL_HOST:$CONSUL_PORT 
+	 echo 'Advertise ' $HOST
+	./opt/consul/consul agent -retry-join $CONSUL_HOST -advertise $HOST -data-dir /tmp/consul -config-file /opt/consul/services.json
 fi
 
-function terminate {
-    echo $(date -Iseconds) Marathon requested shutdown, stopping the $SERVICE_NAME
-    echo $(date -Iseconds) Do deregister instance $SERVICE_ID of service $SERVICE_NAME
-    curl \
-        --request PUT \
-        http://"$CONSUL_URL"/v1/agent/service/deregister/$SERVICE_ID
-
-    echo $(date -Iseconds) Done deregister instance $SERVICE_ID of service $SERVICE_NAME
-    exit 0
-}
 
 
-echo $(date -Iseconds) Starting PostgreSQL.
-postgres &
-echo $(date -Iseconds) Register terminate function to deregister from consul.
-trap terminate SIGTERM
-wait $PID
+
+
+exec "$@"

@@ -30,6 +30,9 @@ services:
     depends_on:
       consul:
         condition: service_healthy
+    environment: 
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500        
     healthcheck:
       test: ["CMD-SHELL","psql -U postgres -d shop -c 'SELECT 1' || exit 1"]
       interval: 15s
