@@ -1,0 +1,25 @@
+server:
+  port: 8008
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+spring:
+  datasource:
+    platform: postgres
+    driverClassName: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+      connection-test-query: select 1
+      connection-timeout: 10
+      driver-class-name: org.postgresql.Driver
+      username: credit
+      password: credit
+      pool-name: db-pool
+      validation-timeout: 5
+      health-check-registry:
+      metric-registry:
+      metrics-tracker-factory:
+      jdbc-url: jdbc:postgresql://localhost:5432/shop
+
