@@ -20,6 +20,7 @@ ENV PATH="$PATH:$JAVA_HOME/bin"
 ENTRYPOINT ["java" \
     ,"-Xms128m" \
     ,"-Xmx128m" \
+    ,"-Xss256k" \ 
     ,"-Dcom.sun.management.jmxremote" \
     ,"-Dcom.sun.management.jmxremote.port=9010" \
     ,"-Dcom.sun.management.jmxremote.local.only=false" \
